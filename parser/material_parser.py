@@ -155,9 +155,23 @@ def _extract_quantity_unit(msg_lower: str) -> Tuple[float | None, str | None]:
     return None, None
 
 
+def _extract_floor(msg_lower: str) -> str | None:
+    floor_patterns = [
+        r"(?:floor|fl)\s*[:#]?\s*(\d+|ground|basement|first|second|third|fourth|fifth|terrace|roof)",
+        r"(\d+|ground|basement|first|second|third|fourth|fifth)\s+floor",
+        r"(?:on|for)\s+(?:the\s+)?(\d+|ground|basement|first|second|third|fourth|fifth)\s+(?:floor|fl)",
+    ]
+
+    for pattern in floor_patterns:
+        match = re.search(pattern, msg_lower)
+        if match:
+            return match.group(1)
+
+    return None
+
 def _extract_project(message: str) -> str | None:
     project_patterns = [
-        r"(?:for|at|project)\s+([A-Za-z0-9\s]+?)(?:\s+(?:floor|building|tower|phase|supplier|rate|activity|and|for)\b|$)",
+        r"(?:for|at|project)\s+([A-Za-z0-9\s]+?)(?:\s+(?:first|second|third|fourth|fifth|ground|basement|floor|phase|supplier|rate|activity|and|for)\b|$)",
         r"([A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)\s+(?:tower|building|project)",
     ]
 
@@ -168,19 +182,6 @@ def _extract_project(message: str) -> str | None:
             if 2 < len(candidate) < 60:
                 return candidate
 
-    return None
-
-
-def _extract_floor(msg_lower: str) -> str | None:
-    floor_patterns = [
-        r"(?:floor|fl)\s*[:#]?\s*(\d+|ground|basement|first|second|third|fourth|fifth|terrace|roof)",
-        r"(?:on|for)\s+(?:the\s+)?(\d+|ground|basement|first|second|third|fourth|fifth)\s+(?:floor|fl)",
-    ]
-
-    for pattern in floor_patterns:
-        match = re.search(pattern, msg_lower)
-        if match:
-            return match.group(1)
     return None
 
     
