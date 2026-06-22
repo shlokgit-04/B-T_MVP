@@ -53,7 +53,14 @@ def parse_material(message: str) -> Tuple[Dict[str, Any], List[ExtractedEntity],
         extracted["floor"] = floor
         entities.append(ExtractedEntity(field="floor", value=floor))
         confidence += 0.15
+        
+    phase = _extract_phase(msg_lower)
+    if phase:
+        extracted["phase"] = phase
+        entities.append(ExtractedEntity(field="phase", value=phase))
+        confidence += 0.15
 
+    
     activity = _extract_activity(msg_lower)
     if activity:
         extracted["activity"] = activity
@@ -174,6 +181,16 @@ def _extract_floor(msg_lower: str) -> str | None:
         match = re.search(pattern, msg_lower)
         if match:
             return match.group(1)
+    return None
+
+    
+def _extract_phase(msg_lower: str) -> str | None:
+    match = re.search(
+        r"phase\s*[:#]?\s*(\d+|one|two|three|four|five)",
+        msg_lower
+    )
+    if match:
+        return match.group(1)
     return None
 
 
