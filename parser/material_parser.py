@@ -147,10 +147,7 @@ def _extract_quantity_unit(msg_lower: str) -> Tuple[float | None, str | None]:
         match = re.search(pattern, msg_lower)
         if match:
             return float(match.group(1)), unit
-
-    number_match = re.search(r"(\d+)", msg_lower)
-    if number_match:
-        return float(number_match.group(1)), None
+    
 
     return None, None
 
@@ -177,10 +174,26 @@ def _extract_project(message: str) -> str | None:
 
     for pattern in project_patterns:
         match = re.search(pattern, message, re.IGNORECASE)
-        if match:
-            candidate = match.group(1).strip()
-            if 2 < len(candidate) < 60:
-                return candidate
+        if not match:
+           continue
+ 
+        candidate = match.group(1).strip()
+
+        first_word = candidate.lower().split()[0]
+
+        if first_word in {
+           "rate",
+           "price",
+           "rs",
+           "rupees",
+           "inr",
+           "activity",
+           "supplier",
+        }:
+            continue
+
+        if 2 < len(candidate) < 60:
+            return candidate
 
     return None
 
